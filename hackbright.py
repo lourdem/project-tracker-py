@@ -67,9 +67,6 @@ def get_project_by_title(title):
 
     title_row = projects_cursor.fetchone()
 
-    print("Title: {}\nDescription: {}\n Max_grade: {}".format(title_row[0], title_row[1], title_row[2]))
-
-
 def get_grade_by_github_title(github, title):
     """Print grade student received for a project."""
     GET_GRADE_QUERY = """
@@ -86,9 +83,20 @@ def get_grade_by_github_title(github, title):
 
 def assign_grade(github, title, grade):
     """Assign a student a grade on an assignment and print a confirmation."""
-    pass
+    ASSIGN_GRADE_QUERY = """
+        INSERT INTO grades (student_github, project_title, grade)
+        VALUES (:student_github, :project_title, :grade) 
 
+    """
+            # values are keys of dictonary of query
 
+    assign_cursor = db.session.execute(ASSIGN_GRADE_QUERY, {'student_github': github,
+         'project_title': title, 'grade': grade}) # values in dict are arguments of fn
+    db.session.commit()
+
+    print(f"Student grade entered.")
+
+   
 def handle_input():
     """Main loop.
 
