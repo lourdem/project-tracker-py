@@ -67,6 +67,8 @@ def get_project_by_title(title):
 
     title_row = projects_cursor.fetchone()
 
+    print("Here is the information of the project: {}".format(title_row[1]))
+
 def get_grade_by_github_title(github, title):
     """Print grade student received for a project."""
     GET_GRADE_QUERY = """
@@ -85,13 +87,13 @@ def assign_grade(github, title, grade):
     """Assign a student a grade on an assignment and print a confirmation."""
     ASSIGN_GRADE_QUERY = """
         INSERT INTO grades (student_github, project_title, grade)
-        VALUES (:student_github, :project_title, :grade) 
+        VALUES (:s_g, :p_t, :g) 
 
     """
-            # values are keys of dictonary of query
+            # values are keys of dictonary of query, values are artibtrary name
 
-    assign_cursor = db.session.execute(ASSIGN_GRADE_QUERY, {'student_github': github,
-         'project_title': title, 'grade': grade}) # values in dict are arguments of fn
+    assign_cursor = db.session.execute(ASSIGN_GRADE_QUERY, {'s_g': github,
+         'p_t': title, 'g': grade}) # values in dict are arguments of fn
     db.session.commit()
 
     print(f"Student grade entered.")
@@ -120,6 +122,18 @@ def handle_input():
             first_name, last_name, github = args  # unpack!
             make_new_student(first_name, last_name, github)
 
+        elif command == "project_title":
+            title = args[0]
+            get_project_by_title(title)
+
+        elif command == "github_title_grade":
+            github, title = args
+            get_grade_by_github_title(github, title)
+
+        elif command == "assign_grade":
+            github, title, grade = args
+            assign_grade(github, title, grade)
+
         else:
             if command != "quit":
                 print("Invalid Entry. Try again.")
@@ -128,7 +142,7 @@ def handle_input():
 if __name__ == "__main__":
     connect_to_db(app)
 
-    # handle_input()
+    handle_input()
 
     # To be tidy, we close our database connection -- though,
     # since this is where our program ends, we'd quit anyway.
